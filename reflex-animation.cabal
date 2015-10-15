@@ -19,6 +19,21 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 
+source-repository head
+  type: git
+  location: https://github.com/saulzar/reflex-animation.git
+
+
+extra-source-files:
+  .gitignore
+  .travis.yml
+  README.md
+
+source-repository head
+  type: git
+  location: https://github.com/saulzar/reflex-transformers.git
+  
+
 library
   exposed-modules:     Reflex.Animation
                        Reflex.Monad.Time
@@ -27,7 +42,7 @@ library
                        reflex >=0.2 && <0.4,
                        reflex-transformers >= 0.2,
                        vector-space,
-                       semigroups,
+                       semigroups >= 0.16 && < 0.18,
                        profunctors,
                        containers
 
