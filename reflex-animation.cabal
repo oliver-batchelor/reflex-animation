@@ -18,21 +18,15 @@ category:            FRP
 build-type:          Simple
 cabal-version:       >=1.10
 
-
+extra-source-files:
+  .gitignore
+  .travis.yml
+  README.md  
+  
 source-repository head
   type: git
   location: https://github.com/saulzar/reflex-animation.git
 
-
-extra-source-files:
-  .gitignore
-  .travis.yml
-  README.md
-
-source-repository head
-  type: git
-  location: https://github.com/saulzar/reflex-transformers.git
-  
 
 library
   exposed-modules:     Reflex.Animation
