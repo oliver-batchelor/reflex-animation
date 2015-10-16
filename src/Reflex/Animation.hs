@@ -39,8 +39,8 @@ import Data.Profunctor
 import Data.Semigroup
 
 import Data.VectorSpace
-
 import Data.List.NonEmpty (NonEmpty(..))
+import Data.Functor
 
 import Data.Maybe
 import Data.Map.Strict (Map)
