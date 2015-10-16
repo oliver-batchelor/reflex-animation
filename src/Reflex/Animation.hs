@@ -50,7 +50,7 @@ import Prelude hiding (repeat, replicate)
 
 
 -- | Infinite animations time -> a. Supports operations:
--- * Mapping over either time or the value using the Profunctor instance
+-- * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
 -- * Combined in parallel with other infinite animations using Applicative/Monad
 -- * Turned into a finite animation by taking a 'section'
 newtype Animation time a = Animation { sampleAt :: time -> a } 
