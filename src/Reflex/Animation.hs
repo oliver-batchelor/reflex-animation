@@ -25,8 +25,13 @@ module Reflex.Animation
   , linearIn
   , linearOut
   , piecewise
+  
+  , half
+  , sine
+  , cosine
 
   , keyframes
+  , keyframesWith
   
   )
   
@@ -80,8 +85,8 @@ instance Functor (Clip time) where
   
   
 instance (Num time, Ord time) => Semigroup (Clip time a) where
-  clip <> clip'           = piecewise [clip, clip']
-  sconcat (clip :| clips) = piecewise (clip : clips)
+  c <> c'           = piecewise [c, c']
+  sconcat (c :| cs) = piecewise (c : cs)
 
 -- | Constructor for clips to simplify creation
 clip :: (time -> a) -> time -> Clip time a
@@ -100,12 +105,12 @@ section (s, e) a = Clip (lmap (+s) a) (s - e)
 
 -- | Sample from a clip, returning Nothing outside the domain
 sampleClip :: (Ord time, Num time) => Clip time a -> time -> Maybe a
-sampleClip clip t | t >= 0 && t <= period clip = Just $ sampleAt (clipAnim clip) t 
+sampleClip c t | t >= 0 && t <= period c = Just $ sampleAt (clipAnim c) t 
                 | otherwise    = Nothing
          
 -- | Turn a clip into an infinite Animation by using Maybe
 toMaybe :: (Ord time, Num time) => Clip time a -> Animation time (Maybe a)
-toMaybe clip = Animation (sampleClip clip)
+toMaybe c = Animation (sampleClip c)
 
   
 -- | Make an infinite animation by clamping time to lie within the period
@@ -128,8 +133,8 @@ replicate n (Clip anim p) = Clip (lmap time anim) (fromIntegral n * p) where
 
 -- | Stretch a clip to a specific size by scaling time
 stretchTo :: (RealFrac time)  => time -> Clip time a -> Clip time a
-stretchTo p clip = Clip (lmap (* factor) (clipAnim clip)) p
-  where factor = period clip / p 
+stretchTo p c = Clip (lmap (* factor) (clipAnim c)) p
+  where factor = period c / p 
 
 
 
@@ -149,7 +154,7 @@ crop (s, e) = cropStart s . cropEnd e
 
 -- | Crop the clip to half the period
 half :: (RealFrac time) => Clip time a -> Clip time a
-half clip = cropStart (0.5 * period clip) clip
+half c = cropStart (0.5 * period c) c
 
 
 
@@ -166,10 +171,15 @@ intervalsWith interp start []     = [clip (const start) 0]
 intervalsWith interp start frames = zipWith toInterval ((0, start) : frames) frames
   where toInterval (_, k) (p, k') = interp p (k, k') 
   
+  
+-- | Keyframes using an interpolator between intervals (e.g. 'linear')
 keyframesWith ::  (RealFrac time) => Interpolater time a -> a -> [(time, a)] -> Clip time a
 keyframesWith interp start frames  =  piecewise $ intervalsWith interp start frames
 
 
+-- | Keyframer using linear interpolation
+-- Specified as pairs of (value, interval)
+-- First key is provided separately and always starts at time = 0
 keyframes :: (VectorSpace v, RealFrac (Scalar v)) =>  v -> [(Scalar v, v)] -> Clip (Scalar v) v
 keyframes = keyframesWith linear
  
@@ -177,7 +187,8 @@ sampleInterval ::  (Ord time, Num time) => Animation time a -> Map time (Animati
 sampleInterval start m t = sampleAt anim0 (t - t0) where
   (t0, anim0) = fromMaybe (0, start) (Map.lookupLT t m)
   
-  
+-- | Piecewise animation using several clips concatenated end to end, 
+-- one playing after the other, equivalent to 'sconcat'.
 piecewise :: (Ord time, Num time) => [Clip time a] -> Clip time a
 piecewise []    = error "piecewise: empty list"
 piecewise [a]   = a
