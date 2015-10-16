@@ -218,7 +218,7 @@ cosine p = stretchTo p (clip cos pi)
 fmod :: RealFrac a => a -> a -> a
 fmod x d | x > 0 || frac == 0 =  frac * d
          | otherwise          = (frac + 1) * d
-  where frac = snd $ properFraction (x / d)
+  where (_::Int, frac) = properFraction (x / d)
         
         
        
