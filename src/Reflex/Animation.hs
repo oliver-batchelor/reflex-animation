@@ -57,9 +57,9 @@ import Prelude hiding (repeat, replicate)
 
 
 -- | Infinite animations time -> a. Supports operations:
--- * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
--- * Combined in parallel with other infinite animations using Applicative/Monad
--- * Turned into a finite animation by 'crop'
+--     * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
+--     * Combined in parallel with other infinite animations using Applicative/Monad
+--     * Turned into a finite animation by 'crop'
 newtype Animation time a = Animation { sampleAt :: time -> a } 
           deriving (Functor, Applicative, Monad, Profunctor) 
                     
@@ -73,13 +73,13 @@ delayed t = lmap (subtract t)
 
 
 -- | Finite animations, Animation with a period. Supports operations:
--- * Combined end-to end using Semigroup instance, e.g. 'sconcat'
--- * Combined with Infinite animations with 'apply'
--- * Turned into Inifinite animations by either: 
---   > Clamping time - 'clamped' 
---   > Using Maybe - 'toMaybe'
---   > Repeating - 'repeat'
--- * Futher cropped in various ways
+--     * Combined end-to end using Semigroup instance, e.g. 'sconcat'
+--     * Combined with Infinite animations with 'apply'
+--     * Turned into Inifinite animations by either: 
+--         > Clamping time - 'clamped' 
+--         > Using Maybe - 'toMaybe'
+--         > Repeating - 'repeat'
+--     * Futher cropped in various ways
 data Clip time a = Clip { clipAnim :: Animation time a, period :: time }
 
 instance Functor (Clip time) where
