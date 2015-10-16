@@ -1,4 +1,3 @@
-{-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Reflex.Animation
@@ -77,7 +76,7 @@ instance (Num time, Ord time) => Semigroup (Clip time a) where
 
 -- | Constructor for clips to simplify creation
 clip :: (time -> a) -> time -> Clip time a
-clip anim p = Clip (Animation anim) p
+clip anim = Clip (Animation anim) 
 
 apply :: Clip time (a -> b) -> Animation time a -> Clip time b
 apply (Clip anim p) a = Clip (anim <*> a) p
@@ -181,11 +180,13 @@ piecewise clips = clip (sampleInterval start m) (last times) where
  
 -- | Predefined clips based on special functions for building up animations
 linearIn ::  (RealFrac time) => time -> Clip time time
-linearIn p = clip (\t -> t / p) p
+linearIn p | p <= 0.0  = error "linearIn: time must be >= 0"
+           | otherwise = clip (/ p) p
 
 
 linearOut ::  (RealFrac time) => time -> Clip time time
-linearOut p = clip (\t -> 1.0 - t / p) p 
+linearOut p | p <= 0    = error "linearOut: time must be >= 0"
+            | otherwise = clip (\t -> 1.0 - t / p) p 
 
 sine :: (RealFrac time, Floating time) => time -> Clip time time
 sine p = stretchTo p (clip sin pi)

@@ -29,6 +29,9 @@ import Reflex.Monad
 import Reflex
 
 import Data.VectorSpace
+import Data.Functor
+import Control.Applicative
+
 import qualified Data.List.NonEmpty as NE
 import Data.List.NonEmpty (NonEmpty)
 
@@ -68,20 +71,20 @@ animate anim time = sampleAt anim <$> time
    
 sampleOn :: (Reflex t, RealFrac time) => Event t (time -> a) -> Behavior t time -> Event t (Behavior t a)
 sampleOn e t = attachWith startAt t e where
-  startAt start f = f . (subtract start) <$> t
+  startAt start f = f . subtract start <$> t
   
 
 
    
 animateOn :: (Reflex t, RealFrac time) => Event t (Animation time a) -> Behavior t time -> Event t (Behavior t a)
-animateOn e t = sampleOn (sampleAt <$> e) t
+animateOn e = sampleOn (sampleAt <$> e)
 
 
 fromNow ::  MonadTime t time m => m (Behavior t time)
 fromNow = do
   time  <- getTime
   start <- sample time
-  return $ (subtract start <$> time)
+  return (subtract start <$> time)
 
 
 playClip :: MonadTime t time m =>  Clip time a ->  m (Behavior t (Maybe a), Event t ())
