@@ -27,8 +27,6 @@ module Reflex.Animation
   , linearOut
   , piecewise
   
-
-
   , keyframes
   , keyframesWith
   
@@ -57,7 +55,7 @@ import Prelude hiding (repeat, replicate)
 
 
 -- | Infinite animations time -> a. Supports operations:
---     * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
+--      * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
 --     * Combined in parallel with other infinite animations using Applicative/Monad
 --     * Turned into a finite animation by 'crop'
 newtype Animation time a = Animation { sampleAt :: time -> a } 
