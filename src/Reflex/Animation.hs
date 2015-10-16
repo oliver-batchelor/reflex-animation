@@ -10,8 +10,9 @@ module Reflex.Animation
   , sampleClip
   , toMaybe
   , stretchTo
+  , apply
 
-  , section
+  , crop
   , clamped
 
   , repeat
@@ -19,19 +20,21 @@ module Reflex.Animation
 
   , cropEnd
   , cropStart
-  , crop
+  , reCrop
 
   , linear
   , linearIn
   , linearOut
   , piecewise
   
-  , half
-  , sine
-  , cosine
+
 
   , keyframes
   , keyframesWith
+  
+  , half
+  , sine
+  , cosine
   
   )
   
@@ -39,7 +42,6 @@ module Reflex.Animation
 
 import Control.Applicative
 
-import Data.Bifunctor
 import Data.Profunctor
 import Data.Semigroup
 
@@ -57,7 +59,7 @@ import Prelude hiding (repeat, replicate)
 -- | Infinite animations time -> a. Supports operations:
 -- * Mapping over either time or the value using the Functor/Profunctor(lmap, rmap)
 -- * Combined in parallel with other infinite animations using Applicative/Monad
--- * Turned into a finite animation by taking a 'section'
+-- * Turned into a finite animation by 'crop'
 newtype Animation time a = Animation { sampleAt :: time -> a } 
           deriving (Functor, Applicative, Monad, Profunctor) 
                     
@@ -77,6 +79,7 @@ delayed t = lmap (subtract t)
 --   > Clamping time - 'clamped' 
 --   > Using Maybe - 'toMaybe'
 --   > Repeating - 'repeat'
+-- * Futher cropped in various ways
 data Clip time a = Clip { clipAnim :: Animation time a, period :: time }
 
 instance Functor (Clip time) where
@@ -99,8 +102,8 @@ apply (Clip anim p) a = Clip (anim <*> a) p
 
 
 -- | Take a section of an infinite animation as a Clip
-section :: (Ord time, Num time) => (time, time) -> Animation time a -> Clip time a
-section (s, e) a = Clip (lmap (+s) a) (s - e)
+crop :: (Ord time, Num time) => (time, time) -> Animation time a -> Clip time a
+crop (s, e) a = Clip (lmap (+s) a) (s - e)
 
 
 -- | Sample from a clip, returning Nothing outside the domain
@@ -149,8 +152,8 @@ cropStart s (Clip anim p) = Clip (lmap (+ s') anim) (p - s')
   where s' = clamp (0, p) s
 
 -- | Crop the clip to a range
-crop ::  (Ord time, Num time) => (time, time) -> Clip time a -> Clip time a
-crop (s, e) = cropStart s . cropEnd e 
+reCrop ::  (Ord time, Num time) => (time, time) -> Clip time a -> Clip time a
+reCrop (s, e) = cropStart s . cropEnd e 
 
 -- | Crop the clip to half the period
 half :: (RealFrac time) => Clip time a -> Clip time a
