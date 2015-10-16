@@ -49,7 +49,10 @@ import qualified Data.Map.Strict as Map
 import Prelude hiding (repeat, replicate)
 
 
--- | Infinite animations  'time -> a'
+-- | Infinite animations time -> a. Supports operations:
+-- * Mapping over either time or the value using the Profunctor instance
+-- * Combined in parallel with other infinite animations using Applicative/Monad
+-- * Turned into a finite animation by taking a 'section'
 newtype Animation time a = Animation { sampleAt :: time -> a } 
           deriving (Functor, Applicative, Monad, Profunctor) 
                     
@@ -62,7 +65,13 @@ delayed :: (Num time) => time -> Animation time a -> Animation time a
 delayed t = lmap (subtract t)
 
 
--- | Infinite animations, Animation with a period  
+-- | Finite animations, Animation with a period. Supports operations:
+-- * Combined end-to end using Semigroup instance, e.g. 'sconcat'
+-- * Combined with Infinite animations with 'apply'
+-- * Turned into Inifinite animations by either: 
+--   > Clamping time - 'clamped' 
+--   > Using Maybe - 'toMaybe'
+--   > Repeating - 'repeat'
 data Clip time a = Clip { clipAnim :: Animation time a, period :: time }
 
 instance Functor (Clip time) where
