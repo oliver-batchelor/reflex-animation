@@ -38,7 +38,8 @@ library
                        vector-space,
                        semigroups >= 0.16 && < 0.18,
                        profunctors,
-                       containers
+                       containers,
+                       bifunctors
 
   default-extensions:
     FlexibleInstances
