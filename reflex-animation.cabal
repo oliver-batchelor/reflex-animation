@@ -38,7 +38,7 @@ library
                        vector-space,
                        semigroups >= 0.16 && < 0.18,
                        profunctors >= 1.0 && < 6.0,
-                       containers  == 0.5.*,,
+                       containers  == 0.5.*,
                        bifunctors
 
   default-extensions:
