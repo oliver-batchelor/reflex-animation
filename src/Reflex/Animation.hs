@@ -165,9 +165,8 @@ linear p (s, e) = clip (\t -> lerp s e (t / p)) p
  
 
 
-
 intervalsWith ::  (RealFrac time) => Interpolater time a -> a -> [(time, a)] -> [Clip time a]
-intervalsWith interp start []     = [clip (const start) 0]
+intervalsWith _ start []     = error "intervalsWith: empty list"
 intervalsWith interp start frames = zipWith toInterval ((0, start) : frames) frames
   where toInterval (_, k) (p, k') = interp p (k, k') 
   
@@ -222,11 +221,7 @@ fmod x d | x > 0 || frac == 0 =  frac * d
   where frac = snd $ properFraction (x / d)
         
         
-fDivMod :: RealFrac a => a -> a -> (a, a)
-fDivMod x d | x > 0 || frac == 0 =  (fromIntegral n, frac * d)
-            | otherwise          =  (fromIntegral n, (frac + 1) * d)
-  where (n, frac) = properFraction (x / d)
-        
+       
   
 clamp :: Ord a => (a, a) -> a -> a
 clamp (lower, upper) a = max lower (min upper a)

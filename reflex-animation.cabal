@@ -51,6 +51,7 @@ library
     GeneralizedNewtypeDeriving
     MultiParamTypeClasses
     RecursiveDo
+    ConstraintKinds
     ScopedTypeVariables
                        
   hs-source-dirs:      src
