@@ -6,8 +6,8 @@ description:         This package provides a set of functions for creating and p
                      finite animations which has only a length (and not a starting point) to keep things simple. If needed such animations
                      can be converted to infinite animations, combined, and clipped as required.
 
-homepage:            https://github.com/reflex-animation
-bug-reports:         https://github.com/reflex-animation/issues
+homepage:            https://github.com/saulzar/reflex-animation
+bug-reports:         https://github.com/saulzar/reflex-animation/issues
 license:             BSD3
 license-file:        LICENSE
 
