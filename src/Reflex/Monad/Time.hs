@@ -1,13 +1,12 @@
 module Reflex.Monad.Time 
   ( MonadTime (..)
 
-  , observeChanges
   , delay_
    
   , animate
   , animateClip
   , animateOn
-
+  
   
   , play
   , playClip
@@ -40,14 +39,6 @@ import Control.Monad
  
   
 class (MonadReflex t m, RealFrac time) => MonadTime t time m | m -> t time where
-
-  -- | Integrate a behavior with respect to time, at a sampling rate determined by the implementor
-  -- uses VectorSpace to allow for monomorphic vectors, e.g. gloss
-  integrate :: (VectorSpace v, Scalar v ~ time) => v -> Behavior t v -> m (Behavior t v)
-  
-  -- | Observe an event by sampling it at a rate determined by the implementing framework
-  -- e.g. reflex-gloss-scene uses a fixed sampling rate.
-  observe :: Behavior t a -> m (Event t a)
   
   -- | A behavior for time, must be up to date 
   -- (i.e. represents current time not previous time)
@@ -84,6 +75,7 @@ sampleOn e t = attachWith startAt t e where
   
 
 
+  
 -- | Create a Behavior from an infinite animation on the occurance of the event   
 animateOn :: (Reflex t, RealFrac time) => Event t (Animation time a) -> Behavior t time -> Event t (Behavior t a)
 animateOn e = sampleOn (sampleAt <$> e)
@@ -133,12 +125,6 @@ playOn e = do
   return (join b, done)
   
 
--- | Observe changes in a 'Behavior a' it's Eq a instance
-observeChanges :: (Eq a, MonadTime t time m) => Behavior t a -> m (Event t a)
-observeChanges b = do
-  initial <- sample b
-  d <- holdDyn initial =<< observe b
-  return (updated $ nubDyn d)  
 
 
 -- | Helper functions using filter with Eq

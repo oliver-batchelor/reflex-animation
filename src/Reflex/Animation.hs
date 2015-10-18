@@ -34,6 +34,9 @@ module Reflex.Animation
   , sine
   , cosine
   
+  , clamp
+  , fmod
+  
   )
   
   where
@@ -221,8 +224,6 @@ fmod x d | x > 0 || frac == 0 =  frac * d
          | otherwise          = (frac + 1) * d
   where (_::Int, frac) = properFraction (x / d)
         
-        
-       
   
 clamp :: Ord a => (a, a) -> a -> a
 clamp (lower, upper) a = max lower (min upper a)
